@@ -90,4 +90,4 @@ if (flags.startup) {
   const res = await run();
   console.log(res);
 }
-await serve(handler, { port: flags.port });
+await serve(handler, { port: Number(flags.port) });
