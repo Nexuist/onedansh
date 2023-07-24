@@ -6,7 +6,7 @@ const VERSION = "1.0.0";
 
 const flags = parse(Deno.args, {
   string: ["token"],
-  boolean: ["help", "version", "raw", "startup"],
+  boolean: ["help", "version", "port", "raw", "startup"],
   alias: {
     h: "help",
     v: "version",
@@ -53,15 +53,15 @@ if (flags._.length == 0) {
 }
 
 const run = async () => {
-const SH = String(flags._[0]).split(" ");
+  const SH = String(flags._[0]).split(" ");
   const cmd = new Deno.Command(SH[0], {
     args: [...SH.slice(1)]
   });
   const { code, stdout, stderr } = await cmd.output();
-  return { 
-      code, 
-      stdout: new TextDecoder().decode(stdout), 
-      stderr: new TextDecoder().decode(stderr) 
+  return {
+    code,
+    stdout: new TextDecoder().decode(stdout),
+    stderr: new TextDecoder().decode(stderr)
   };
 }
 
@@ -75,13 +75,13 @@ const handler = async (request) => {
   const res = await run();
   const body = flags.raw ? res.stdout : JSON.stringify(res);
   return new Response(
-      body, 
-      { 
-        status: res.code == 0 ? 200 : 500,
-        headers: { 
-          "content-type": flags.raw ? "text/plain" : "application/json" 
-        } 
-      });
+    body,
+    {
+      status: res.code == 0 ? 200 : 500,
+      headers: {
+        "content-type": flags.raw ? "text/plain" : "application/json"
+      }
+    });
 };
 
 console.log(`HTTP webserver running. Access it at: http://localhost:8080/`);
