@@ -5,8 +5,8 @@ import { serve } from "https://deno.land/std@0.195.0/http/server.ts";
 const VERSION = "1.0.0";
 
 const flags = parse(Deno.args, {
-  string: ["token"],
-  boolean: ["help", "version", "port", "raw", "startup"],
+  string: ["token", "port"],
+  boolean: ["help", "version", "raw", "startup"],
   alias: {
     h: "help",
     v: "version",
@@ -41,7 +41,7 @@ if (flags.version) {
 }
 
 // Exit if port is not a number
-if (typeof flags.port !== "number") {
+if (flags.port && isNaN(Number(flags.port))) {
   console.error("Port must be a number");
   Deno.exit(1);
 }
