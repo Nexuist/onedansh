@@ -17,13 +17,13 @@ Options:
 
 ## Installation
 
-Onedansh ships with prebuilt executables. Just pick the right one for your platform from the `builds` folder.
-
-Alternatively, you can run the script with Deno directly:
+You can run the script with Deno directly:
 
 ```bash
 deno run --allow-net --allow-run onedansh.ts
 ```
+
+Alternatively, you can build executables for any supported platform by running `build.sh`. You'll need to have [Deno](https://deno.land) installed.
 
 ## Authentication
 
@@ -68,3 +68,4 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+****
