@@ -20,10 +20,10 @@ Options:
 You can run the script with Deno directly:
 
 ```bash
-deno run --allow-net --allow-run onedansh.ts
+deno run --allow-net --allow-run https://raw.githubusercontent.com/Nexuist/onedansh/main/onedansh.ts "echo Hello World"
 ```
 
-Alternatively, you can build executables for any supported platform by running `build.sh`. You'll need to have [Deno](https://deno.land) installed.
+Alternatively, you can build executables for any supported platform with `build.sh`. You'll need to have [Deno](https://deno.land) installed.
 
 ## Authentication
 
