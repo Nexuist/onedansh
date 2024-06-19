@@ -25,6 +25,25 @@ deno run --allow-net --allow-run https://raw.githubusercontent.com/Nexuist/oneda
 
 Alternatively, you can build executables for any supported platform with `build.sh`. You'll need to have [Deno](https://deno.land) installed.
 
+## Template Strings
+
+New with v1.1, you can now use template strings in your command. A template string looks like `{{this}}`. To fill out the template, send a POST request with a JSON body containing keys corresponding to the template names. Here's an example:
+
+```bash
+./onedansh.ts -r "echo Hello {{name}}"
+```
+
+```bash
+curl -X POST -d '{"name": "World"}' -H "Content-Type: application/json"  localhost:8080
+
+Hello World
+```
+
+`onedansh` will reject a request if it doesn't have all the required keys in the JSON body.
+
+> [!CAUTION]
+> Template strings are not sanitized and can be used to execute arbitrary code. It's your responsibility to ensure that the input is safe. Use authentication tokens to prevent unauthorized access. You probably don't want to expose `onedansh` to the Internet if you use template strings.
+
 ## Authentication
 
 If the `--token` flag is provided, the token will be required to be passed in the `Authorization` header of the request. Here's an example `curl` if the token is "abc":
@@ -39,16 +58,16 @@ Just run `build.sh` to build fresh binaries for all supported platforms. You'll 
 
 ## Next Steps
 
-* I'm open to adding additional flags if anyone uses this tool and wants a bit more functionality.
+* I'm open to adding additional flags if anyone uses this tool and wants a bit more functionality
 
-* It might be nice to allow the requester to specify what format they want the response in (TXT or JSON).
+* It might be nice to allow the requester to specify what format they want the response in (TXT or JSON)
 
 ## License
 
 ```txt
 MIT License
 
-Copyright (c) 2023 Andi Andreas
+Copyright (c) 2024 Andi Andreas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

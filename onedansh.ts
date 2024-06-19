@@ -2,7 +2,7 @@
 import { parse } from "https://deno.land/std@0.194.0/flags/mod.ts";
 import { serve } from "https://deno.land/std@0.195.0/http/server.ts";
 
-const VERSION = "1.0.0";
+const VERSION = "1.1.0";
 
 const flags = parse(Deno.args, {
   string: ["token", "port"],
@@ -52,10 +52,11 @@ if (flags._.length == 0) {
   Deno.exit(1);
 }
 
-const run = async () => {
-  const SH = String(flags._[0]).split(" ");
-  const cmd = new Deno.Command(SH[0], {
-    args: [...SH.slice(1)]
+const run = async (command: string, args: string[]) => {
+  const cmd = new Deno.Command(command, {
+    args,
+    stdout: "piped",
+    stderr: "piped"
   });
   const { code, stdout, stderr } = await cmd.output();
   return {
@@ -72,7 +73,28 @@ const handler = async (request) => {
   if (flags.token && auth !== `Bearer ${flags.token}`) {
     return new Response("Unauthorized", { status: 401 });
   }
-  const res = await run();
+  const cmdParts = String(flags._[0]).split(" ");
+  let res = { stdout: "", stderr: "", code: 0 };
+  if (request.method == "POST" && request.headers.get("content-type") == "application/json") {
+    const templateNames: string[] = [];
+    for (const part of cmdParts) {
+      if (part.startsWith("{{") && part.endsWith("}}")) {
+        templateNames.push(part.slice(2, -2));
+      }
+    }
+    const body = await request.json();
+    for (const name of templateNames) {
+      if (body[name] == undefined) {
+        return new Response(`Missing template variable: ${name}`, { status: 400 });
+      }
+      cmdParts[cmdParts.indexOf(`{{${name}}}`)] = body[name];
+    }
+    console.log(cmdParts);
+    res = await run(cmdParts[0], cmdParts.slice(1));
+  }
+  else {
+    res = await run(cmdParts[0], cmdParts.slice(1));
+  }
   const body = flags.raw ? res.stdout : JSON.stringify(res);
   return new Response(
     body,
@@ -84,10 +106,11 @@ const handler = async (request) => {
     });
 };
 
-console.log(`HTTP webserver running. Access it at: http://localhost:8080/`);
+console.log(`HTTP webserver running. Access it at: http://localhost:${flags.port}/`);
 console.log(`Run command: ${flags._[0]}`);
 if (flags.startup) {
-  const res = await run();
+  const cmdParts = String(flags._[0]).split(" ");
+  const res = await run(cmdParts[0], cmdParts.slice(1));
   console.log(res);
 }
 await serve(handler, { port: Number(flags.port) });
